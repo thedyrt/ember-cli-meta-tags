@@ -21,13 +21,26 @@ const keys = Object.keys || Ember.keys;
 export default Ember.Service.extend({
   headData: Ember.inject.service(),
 
+  isFastBoot: Ember.computed(function() {
+    const fastbootService = Ember.getOwner(this).lookup('service:fastboot');
+    return fastbootService ? fastbootService.get('isFastBoot') : false;
+  }),
+
   // crawl up the active route stack and collect head tags
   collectHeadTags() {
     let tags = {};
-    let currentHandlerInfos = this.get('router._routerMicrolib.currentHandlerInfos');
-    if (!currentHandlerInfos) {
-      currentHandlerInfos = this.get('router.router.currentHandlerInfos');
+    let currentHandlerInfos = null;
+
+    if (this.get('router._routerMicrolib')) {
+      if (this.get('isFastBoot')) {
+        currentHandlerInfos = this.get('router._routerMicrolib.activeTransition.handlerInfos');
+      } else {
+        currentHandlerInfos = this.get('router._routerMicrolib.currentHandlerInfos');
+      }
+    } else {
+      currentHandlerInfos = this.get('router.router.activeTransition.handlerInfos');
     }
+
     let handlerInfos = Ember.A(currentHandlerInfos);
     handlerInfos.forEach((handlerInfo) => {
       assign(tags, this._extractHeadTagsFromRoute(handlerInfo.handler));
