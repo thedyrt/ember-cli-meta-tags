@@ -37,8 +37,9 @@ export default Ember.Service.extend({
       } else {
         currentHandlerInfos = this.get('router._routerMicrolib.currentHandlerInfos');
       }
+      currentHandlerInfos = this.get('router._routerMicrolib.currentHandlerInfos');
     } else {
-      currentHandlerInfos = this.get('router.router.activeTransition.handlerInfos');
+      currentHandlerInfos = this.get('router.router.currentHandlerInfos');
     }
 
     let handlerInfos = Ember.A(currentHandlerInfos);
